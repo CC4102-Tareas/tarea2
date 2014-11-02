@@ -4,7 +4,7 @@
 #define DEBUG 1
 
 /**
-    Implementación hecha seǵun URL: https://www.cs.berkeley.edu/~jrs/61b/lec/36
+    Implementación hecha según URL: https://www.cs.berkeley.edu/~jrs/61b/lec/36
 */
 typedef struct nodo {
    int clave;
@@ -67,7 +67,6 @@ void main() {
             nuevo_nodo = crear_nodo(3);
             insertar(&raiz, &nuevo_nodo);
             nuevo_nodo = crear_nodo(4);
-            insertar(&raiz, &nuevo_nodo);
 
             //printf("\nIngresar elemento : ");
             //scanf("%d", &nuevo_nodo->clave);
@@ -239,20 +238,15 @@ void insertar(Nodo **raiz, Nodo **z) {
     // si el árbol está vacío.
     if (y == NULL) {
         // z es la raíz.
-        (DEBUG?printf("\nEl nodo ingresado es la raíz."):1);
+        (DEBUG?printf("\nEl nodo %d es la raíz.", (*z)->clave):1);
         *raiz = *z;
     } else if ((*z)->clave < y->clave) {
-        (DEBUG?printf("\nEl nodo ingresado ahora es el hijo izquierdo de %d", y->clave):1);
+        (DEBUG?printf("\nEl nodo %d ahora es el hijo izquierdo de %d", (*z)->clave, y->clave):1);
         y->hijo_izq = *z;
     } else {
-        (DEBUG?printf("\nEl nodo ingresado ahora es el hijo derecho de %d", y->clave):1);
+        (DEBUG?printf("\nEl nodo %d ahora es el hijo derecho de %d", (*z)->clave, y->clave):1);
         y->hijo_der = *z;
     }
-    
-    // para mantener las propiedades del árbol. Esto se hace también al crear el nodo.
-    // aquí se ratifica por temas de consistencia.
-    (*z)->hijo_izq = NULL;
-    (*z)->hijo_der = NULL;
 }
 
 /*
