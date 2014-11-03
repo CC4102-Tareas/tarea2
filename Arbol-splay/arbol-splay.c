@@ -28,6 +28,7 @@ void inorder(Nodo **);
 void preorder(Nodo **);
 void postorder(Nodo **);
 
+void mostrar_nodo(Nodo *);
 /**
     Propiedades que debe cumplir un árbol rojo-negro:
         1) Todo nodo es ROJO o NEGRO.
@@ -178,7 +179,7 @@ void rotacion_izq(Nodo **raiz, Nodo **x) {
 */
 void rotacion_der(Nodo **raiz, Nodo **y) {
 
-    (DEBUG?printf("\nRotación derecha del nodo con valor %d", (*y)->clave):1);
+    //(DEBUG?printf("\nRotación derecha del nodo con valor %d", (*y)->clave):1);
 
     // x es el hijo izquierdo de y
     Nodo *x = (*y)->hijo_izq;
@@ -247,6 +248,9 @@ void insertar(Nodo **raiz, Nodo **z) {
         (DEBUG?printf("\nEl nodo %d ahora es el hijo derecho de %d", (*z)->clave, y->clave):1);
         y->hijo_der = *z;
     }
+
+    // llevamos la llave a la raíz
+    llevar_a_raiz(&*raiz, &*z);
 }
 
 /*
@@ -305,16 +309,18 @@ void llevar_a_raiz(Nodo **raiz, Nodo **nodo) {
            
             (DEBUG?printf("\n%d es el hijo derecho de la raíz %d.", temp->clave, temp->padre->clave):1);
             // zig    
-            rotacion_izq(&*raiz, &temp->padre);
             temp = temp->padre;
-            printf("\n%d", temp == *nodo);
-            /*
+            rotacion_izq(&*raiz, &temp);
+            // temp ya no es la raíz, debemos ir a la raíz
+            temp = temp->padre;
         // si el padre es la raiz, y soy el hijo el izquierdo
         } else if (temp->padre == *raiz && temp == temp->padre->hijo_izq) {
 
             (DEBUG?printf("\n%d es el hijo izquierdo de la raíz %d.", temp->clave, temp->padre->clave):1);
             // zag
-            rotacion_der(&*raiz, &temp->padre);
+            temp = temp->padre;
+            rotacion_der(&*raiz, &temp);
+            // temp ya no es la raíz, debemos ir a la raíz
             temp = temp->padre;
         // si temp es el hijo derecho de un hijo izquierdo
         } else if (temp == temp->padre->hijo_der && temp->padre == temp->padre->padre->hijo_izq) {
@@ -323,9 +329,11 @@ void llevar_a_raiz(Nodo **raiz, Nodo **nodo) {
                                                                                          temp->padre->clave, 
                                                                                          temp->padre->padre->clave):1);
             // zig-zag
-            rotacion_izq(&*raiz, &temp->padre);
-            rotacion_der(&*raiz, &temp->padre->padre);
+            temp = temp->padre;
+            rotacion_izq(&*raiz, &temp);
             temp = temp->padre->padre;
+            rotacion_der(&*raiz, &temp);
+            temp = temp->padre;
         // si temp es el hijo izquierdo de un hijo derecho
         } else if (temp == temp->padre->hijo_izq && temp->padre == temp->padre->padre->hijo_der) {
             
@@ -333,9 +341,11 @@ void llevar_a_raiz(Nodo **raiz, Nodo **nodo) {
                                                                                          temp->padre->clave, 
                                                                                          temp->padre->padre->clave):1);
             // zag-zig
-            rotacion_der(&*raiz, &temp->padre);
-            rotacion_izq(&*raiz, &temp->padre->padre);
+            temp = temp->padre;
+            rotacion_der(&*raiz, &temp);
             temp = temp->padre->padre;
+            rotacion_izq(&*raiz, &temp);
+            temp = temp->padre;
         // si temp es el hijo izquierdo de un hijo izquierdo
         } else if (temp == temp->padre->hijo_izq && temp->padre == temp->padre->padre->hijo_izq) {
             
@@ -343,9 +353,11 @@ void llevar_a_raiz(Nodo **raiz, Nodo **nodo) {
                                                                                            temp->padre->clave, 
                                                                                            temp->padre->padre->clave):1);
             // zag-zag
-            rotacion_der(&*raiz, &temp->padre);
-            rotacion_der(&*raiz, &temp->padre->padre);
+            temp = temp->padre;
+            rotacion_der(&*raiz, &temp);
             temp = temp->padre->padre;
+            rotacion_der(&*raiz, &temp);
+            temp = temp->padre;
         // si temp es el hijo derecho  de un hijo derecho
         } else if (temp == temp->padre->hijo_der && temp->padre == temp->padre->padre->hijo_der) {
             
@@ -353,14 +365,11 @@ void llevar_a_raiz(Nodo **raiz, Nodo **nodo) {
                                                                                        temp->padre->clave, 
                                                                                        temp->padre->padre->clave):1);
             // zag-zag
-            printf("\n");
-            dibujar_arbol(*raiz);
-            rotacion_izq(&*raiz, &temp->padre);
-            dibujar_arbol(*raiz);
-            rotacion_izq(&*raiz, &temp->padre);
-            dibujar_arbol(*raiz);
+            temp = temp->padre;
+            rotacion_izq(&*raiz, &temp);
             temp = temp->padre->padre;
-            */
+            rotacion_izq(&*raiz, &temp);
+            temp = temp->padre;
         } 
     }
 }
@@ -371,7 +380,8 @@ void llevar_a_raiz(Nodo **raiz, Nodo **nodo) {
 void inorder(Nodo **temp) {
    if (*temp != NULL) {
       inorder(&((*temp)->hijo_izq));
-      printf("%d ", (*temp)->clave);
+      mostrar_nodo(*temp);
+      //printf("%d ", (*temp)->clave);
       inorder(&((*temp)->hijo_der));
    }
 }
@@ -421,4 +431,23 @@ void dibujar_arbol_helper(Nodo *arbol, int nivel) {
     if (arbol->hijo_izq != NULL) {
         dibujar_arbol_helper(arbol->hijo_izq, nivel + ESPACIO_POR_NIVEL);
     }
+}
+
+void mostrar_nodo(Nodo *nodo) {
+    
+    printf("\n");
+
+    if (nodo != NULL) {
+        printf("Nodo %d", nodo->clave);
+
+        if (nodo->padre != NULL)
+            printf("| padre: %d", nodo->padre->clave);
+        if (nodo->hijo_izq != NULL)
+            printf("| hijo_izq: %d", nodo->hijo_izq->clave);
+        if (nodo->hijo_der != NULL)
+            printf("| hijo_der: %d", nodo->hijo_der->clave);
+    } else {
+        printf("Nodo Nulo!!");
+    }
+
 }
