@@ -34,7 +34,7 @@
 
 
 // Cantidad de elementos en el arreglo;
-#define N 8
+#define N 5
 
 /**
     tabla e[1..N+1][0..N] que almacena los costos de cada subarbol i,j.
@@ -108,17 +108,14 @@ void main() {
     raiz = NULL;
 
     //float p[] = {0.1, 0.025, 0.2, 0.125, 0.125, 0.05, 0.3, 0.075};
-    //float q[] = {0,0,0,0,0,0,0,0};
+    //float q[] = {0,0,0,0,0,0,0,0,0};
 
-    float p[] = {0.15, 0.10, 0.05, 0.10, 0.20};
+    float p[] = {      0.15, 0.10, 0.05, 0.10, 0.20};
     float q[] = {0.05, 0.10, 0.05, 0.05, 0.05, 0.10};
+
     system("clear");
  
-    imprimir_matrices();
-
-    generar_tablas(p, q, N+1);
-
-    imprimir_matrices();
+    generar_tablas(p, q, N);
 
     exit(0);
 
@@ -198,41 +195,48 @@ void generar_tablas(float p[], float q[], int n) {
 
     // se ingresan los valores de la diagonal, para los valores
     // que no están en los rangos
-    for(i=0;i<n;i++) {
-        e[i][i] = q[i];
-        w[i][i] = q[i];
+    for(i=1;i<=n;i++) {
+        e[i][i-1] = q[i-1];
+        w[i][i-1] = q[i-1];
     }
-
+    
+    imprimir_matrices();
     // l permite recorrer las matrices por columnas
-    for(l=0;l<n;l++) {
+    for(l=1;l<=n;l++) {
         // i permite recorrer la matriz por filas. 
         // La restricción indica un recorrido de la diagonal superior izquierda.
         //   ____
         //   |\*|
         //   |_\|
 
-        for(i=0;i<(n-l);i++) {
-            j = i + l;
+        for(i=1;i<=(n-l+1);i++) {
+            j = i + l - 1;
             // asignamos valor ínfinito
-            e[i][j+1] = 32000;
-            w[i][j+1] = w[i][j] + p[j] + q[j];
-            printf("\n(%d, %d)", i,j);
-            //imprimir_matrices();
-            //printf("\nw[i][j](%f) = %f + %f + %f;", w[i][j], w[i][j-1], p[j], q[j]);
+            e[i][j] = 320;
+            w[i][j] = w[i][j-1] + p[j-1] + q[j-1];
+            printf("(%d, %d)\n", i,j);
+            printf("\nw[i][j](%f) = %f + %f + %f;", w[i][j], w[i][j-1], p[j-1], q[j-1]);
+
+            // se busca la raíz óptima para dentro del rango [i,j]
             for(r=i;r<=j;r++) {
-                //printf("\n  (i,r)=(%d, %d)", i,r);
-                //printf("\n  t = %f + %f + %f;", e[i][r], e[r+1][j], w[i][j]);
-                t = e[i][r] + e[r+1][j+1] + w[i][j+1];
-                //printf("\n  if %f < %f", t, e[i][j]);
-                if (t < e[i][j+1]) {
-                    e[i][j+1] = t;
+                //printf("  (i,r-1)=(%d, %d) | (r+1,j)=(%d, %d)\n", i,r-1, r+1,j);
+                //printf("  t = %f + %f + %f\n", e[i][r-1], e[r+1][j], w[i][j]);
+                t = e[i][r-1] + e[r+1][j] + w[i][j];
+                    
+                //printf("  if %f < %f\n", t, e[i][j]);
+                if (t <= e[i][j]) {
+                    e[i][j] = t;
                     raiz[i][j] = r;
                 }
             }
+            imprimir_matrices();
+        
+            //imprimir_matrices();
         }
     }
 
-    // en este punto la tabla root y e están construidas.
+    imprimir_matrices();
+    // en este punto la tabla root, w y e están construidas.
 }
 
 void crear_arbol() {
@@ -435,14 +439,14 @@ void imprimir_matrices() {
             printf("%f     ", raiz[row][columns]);
         printf("\n");
     }
-/*
+
     printf("\nMatriz w\n");
     for (row=0; row<N+1; row++) {
         for(columns=0; columns<N+1; columns++)
             printf("%f     ", w[row][columns]);
         printf("\n");
     }
-*/
+
     printf("\n");
 }
 
