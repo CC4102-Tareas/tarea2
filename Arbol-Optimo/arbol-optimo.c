@@ -46,7 +46,7 @@
     Ocupa las celdas e[i,j] tales que j >= i-1
 */
 
-float e[N][N];
+float e[N+1][N+1];
 
 /**
     Matriz para guardar la raíz de cada sub-arbol que contiene las llaves 
@@ -54,7 +54,7 @@ float e[N][N];
 
     Ocupa las celdas root[i,j] que cumplen la condición 1 < i =< j  < N
 */
-float raiz[N][N];
+float raiz[N+1][N+1];
 
 /**
     Se necesita otra tabla por eficiencia. 
@@ -67,7 +67,7 @@ float raiz[N][N];
     Para  j >= i        tenemos w[i,j]   = w[i,j-1] + p_j + q_j
     
 */
-float w[N][N];
+float w[N+1][N+1];
 
 /**
     Estructura de cada nodo del árbol.
@@ -107,14 +107,16 @@ void main() {
     Nodo *nuevo_nodo, *raiz, *tmp;
     raiz = NULL;
 
-    float p[] = {0.1, 0.025, 0.2, 0.125, 0.125, 0.05, 0.3, 0.075};
-    float q[] = {0,0,0,0,0,0,0,0};
+    //float p[] = {0.1, 0.025, 0.2, 0.125, 0.125, 0.05, 0.3, 0.075};
+    //float q[] = {0,0,0,0,0,0,0,0};
 
+    float p[] = {0.15, 0.10, 0.05, 0.10, 0.20};
+    float q[] = {0.05, 0.10, 0.05, 0.05, 0.05, 0.10};
     system("clear");
  
     imprimir_matrices();
 
-    generar_tablas(p, q, N);
+    generar_tablas(p, q, N+1);
 
     imprimir_matrices();
 
@@ -194,26 +196,36 @@ void generar_tablas(float p[], float q[], int n) {
     int i,l,j,r;
     float t;
 
-    // se ingresan los valores  de la diagonal, para los valores
+    // se ingresan los valores de la diagonal, para los valores
     // que no están en los rangos
     for(i=0;i<n;i++) {
         e[i][i] = q[i];
         w[i][i] = q[i];
     }
 
+    // l permite recorrer las matrices por columnas
     for(l=0;l<n;l++) {
+        // i permite recorrer la matriz por filas. 
+        // La restricción indica un recorrido de la diagonal superior izquierda.
+        //   ____
+        //   |\*|
+        //   |_\|
+
         for(i=0;i<(n-l);i++) {
             j = i + l;
             // asignamos valor ínfinito
-            e[i][j] = 32000;
-            w[i][j] = w[i][j-1] + p[j] + q[j];
-            printf("\nw[i][j](%f) = %f + %f + %f;", w[i][j], w[i][j-1], p[j], q[j]);
+            e[i][j+1] = 32000;
+            w[i][j+1] = w[i][j] + p[j] + q[j];
+            printf("\n(%d, %d)", i,j);
+            //imprimir_matrices();
+            //printf("\nw[i][j](%f) = %f + %f + %f;", w[i][j], w[i][j-1], p[j], q[j]);
             for(r=i;r<=j;r++) {
-                printf("\nt = %f + %f + %f;", e[i][r], e[r+1][j], w[i][j]);
-                t = e[i][r] + e[r+1][j] + w[i][j];
-                printf("\nif %f < %f", t, e[i][j]);
-                if (t < e[i][j]) {
-                    e[i][j] = t;
+                //printf("\n  (i,r)=(%d, %d)", i,r);
+                //printf("\n  t = %f + %f + %f;", e[i][r], e[r+1][j], w[i][j]);
+                t = e[i][r] + e[r+1][j+1] + w[i][j+1];
+                //printf("\n  if %f < %f", t, e[i][j]);
+                if (t < e[i][j+1]) {
+                    e[i][j+1] = t;
                     raiz[i][j] = r;
                 }
             }
@@ -411,26 +423,26 @@ void imprimir_matrices() {
     int row, columns;
 
     printf("\nMatriz e\n");
-    for (row=0; row<N; row++) {
-        for(columns=0; columns<N; columns++)
+    for (row=0; row<N+1; row++) {
+        for(columns=0; columns<N+1; columns++)
             printf("%f     ", e[row][columns]);
         printf("\n");
     }
 
     printf("\nMatriz raiz\n");
-    for (row=0; row<N; row++) {
-        for(columns=0; columns<N; columns++)
+    for (row=0; row<N+1; row++) {
+        for(columns=0; columns<N+1; columns++)
             printf("%f     ", raiz[row][columns]);
         printf("\n");
     }
-
+/*
     printf("\nMatriz w\n");
-    for (row=0; row<N; row++) {
-        for(columns=0; columns<N; columns++)
+    for (row=0; row<N+1; row++) {
+        for(columns=0; columns<N+1; columns++)
             printf("%f     ", w[row][columns]);
         printf("\n");
     }
-
+*/
     printf("\n");
 }
 
