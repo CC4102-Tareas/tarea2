@@ -29,14 +29,8 @@ void preorder(Nodo **);
 void postorder(Nodo **);
 
 void mostrar_nodo(Nodo *);
-/**
-    Propiedades que debe cumplir un árbol rojo-negro:
-        1) Todo nodo es ROJO o NEGRO.
-        2) La raíz es NEGRO.
-        3) Toda hoja es NEGRO.
-        4) Para cada nodo i, todas las rutas del nodo i a sus hojas contienen el mismo número de nodos negros.
-*/
 
+// Programa para probar la estructura
 void main() {
    int choice;
    char ans = 'N';
@@ -62,15 +56,8 @@ void main() {
          do {
             nuevo_nodo = crear_nodo(1);
                        
-            insertar(&raiz, &nuevo_nodo);
-            nuevo_nodo = crear_nodo(2);
-            insertar(&raiz, &nuevo_nodo);
-            nuevo_nodo = crear_nodo(3);
-            insertar(&raiz, &nuevo_nodo);
-            nuevo_nodo = crear_nodo(4);
-
-            //printf("\nIngresar elemento : ");
-            //scanf("%d", &nuevo_nodo->clave);
+            printf("\nIngresar elemento : ");
+            scanf("%d", &nuevo_nodo->clave);
             
             insertar(&raiz, &nuevo_nodo);
             printf("\nQuiere ingresar mas elementos?(y/n) : ");
